@@ -81,8 +81,7 @@ group by datepart(hour, time)
 order by [orders] desc
 
 
--- Calculate the percentage contribution of each pizza type to total revenues
-
+/* Her pizza türünün toplam gelire olan yüzdesel katkısını hesaplayın*/
 
 select pizza_types.category, 
 concat(cast((sum(order_details.quantity*pizzas.price) /
@@ -95,9 +94,9 @@ from order_details
 join pizzas on pizzas.pizza_id = order_details.pizza_id
 join pizza_types on pizza_types.pizza_type_id = pizzas.pizza_type_id
 group by pizza_types.category
--- order by [Revenue from pizza] desc
 
--- revenue contribution from each pizza by pizza name
+
+/* Pizza adıyla her pizzadan elde edilen gelir katkısı % lik */
 select pizza_types.name, 
 concat(cast((sum(order_details.quantity*pizzas.price) /
 (select sum(order_details.quantity*pizzas.price) 
@@ -112,8 +111,8 @@ group by pizza_types.name
 order by [Revenue contribution from pizza] desc
 
 
--- Analyze the cumulative revenue generated over time.
--- use of aggregate window function (to get the cumulative sum)
+/* Zamanla oluşturulan toplam geliri analiz edin.
+ Toplam değeri elde etmek için kümülatif toplama pencere fonksiyonu kullanın.*/
 with cte as (
 select date as 'Date', cast(sum(quantity*price) as decimal(10,2)) as Revenue
 from order_details 
@@ -126,9 +125,7 @@ select Date, Revenue, sum(Revenue) over (order by date) as 'Cumulative Sum'
 from cte 
 group by date, Revenue
 
-
--- Determine the top 3 most ordered pizza types based on revenue for each pizza category.
-
+/* Her pizza kategorisi için gelire göre en çok sipariş edilen ilk 3 pizza türünü belirleyin.*/
 with cte as (
 select category, name, cast(sum(quantity*price) as decimal(10,2)) as Revenue
 from order_details 
